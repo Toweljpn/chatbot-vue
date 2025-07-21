@@ -1,6 +1,6 @@
 <template>
   <div class="parent-page-content">
-    <h1>私の素晴らしいウェブサイト</h1>
+    <h2>AI Chatbot(Vue)</h2>
     <p>これは親ページのコンテンツです。ここに他の情報や要素を追加できます。</p>
     <button @click="toggleChat" class="open-chat-button">チャットを開く</button>
   </div>
@@ -29,7 +29,7 @@
           v-model="userInput"
           @keyup.enter="sendMessage"
           :disabled="isLoading"
-          placeholder="メッセージを入力..."
+          placeholder="質問を入力してください"
         />
         <button @click="sendMessage" :disabled="isLoading">送信</button>
       </div>
@@ -163,159 +163,234 @@ onMounted(() => {
 </script>
 
 <style>
+/* 全体的なスタイル */
 body {
   margin: 0;
   padding: 0;
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif; /* よりモダンなフォント */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   display: flex;
-  flex-direction: column; /* 縦方向に要素を配置 */
-  justify-content: flex-start; /* 上から配置 */
-  align-items: center; /* 中央揃え */
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   min-height: 100vh;
-  background-color: #f0f2f5; /* 背景色を追加 */
-  padding-top: 50px; /* 親ページコンテンツとチャットウィンドウの間にスペース */
+  background: linear-gradient(to right, #ece9e6, #ffffff); /* 柔らかいグラデーション背景 */
+  padding-top: 50px;
+  color: #333;
 }
 
 .parent-page-content {
   text-align: center;
-  margin-bottom: 30px; /* ボタンとチャットウィンドウの間にスペース */
+  margin-bottom: 40px;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); /* より洗練されたシャドウ */
+  max-width: 600px;
+  width: 90%;
 }
 
+.parent-page-content h2 {
+  color: #2c3e50;
+  font-size: 2.2em;
+  margin-bottom: 15px;
+}
+
+.parent-page-content p {
+  color: #555;
+  font-size: 1.1em;
+  line-height: 1.6;
+}
+
+/* チャットを開くボタン */
 .open-chat-button {
-  padding: 15px 30px;
+  padding: 15px 35px;
   font-size: 1.2em;
-  background-color: #007bff;
+  background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%); /* グラデーション */
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 30px; /* より丸く */
   cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3); /* 強めのシャドウ */
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-top: 20px;
 }
 
 .open-chat-button:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(0, 123, 255, 0.4);
 }
 
+.open-chat-button:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+}
+
+/* チャットウィンドウ全体 */
 #app {
-  position: fixed; /* ドラッグ可能にするためにfixed */
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  background-color: #f9f9f9;
+  position: fixed;
+  border: none; /* ボーダーをなくす */
+  border-radius: 15px; /* より丸く */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25); /* 強めのシャドウで浮遊感 */
+  background-color: #ffffff; /* クリーンな白 */
   box-sizing: border-box;
-  width: 400px; /* チャットウィンドウの幅 */
-  height: 500px; /* チャットウィンドウの高さ */
+  width: 420px; /* 少し広めに */
+  height: 550px; /* 少し高めに */
   display: flex;
   flex-direction: column;
-  resize: both; /* リサイズ可能にする */
-  overflow: hidden; /* リサイズ時にスクロールバーを表示 */
-  z-index: 1000; /* 他の要素の上に表示 */
+  resize: both;
+  overflow: hidden;
+  z-index: 1000;
+  transition: box-shadow 0.3s ease;
 }
 
+#app:hover {
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* チャットヘッダー */
 .chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  background-color: #007bff;
+  padding: 15px 20px; /* パディングを増やす */
+  background: linear-gradient(90deg, #4a00e0 0%, #8e2de2 100%); /* 深みのあるグラデーション */
   color: white;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  cursor: grab; /* ドラッグ可能であることを示す */
-  font-weight: bold;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  cursor: grab;
+  font-weight: 700; /* 太字 */
+  font-size: 1.1em;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .chat-header span {
   flex-grow: 1;
   text-align: center;
+  letter-spacing: 0.8px;
 }
 
 .close-button {
   background: none;
   border: none;
   color: white;
-  font-size: 1.2em;
+  font-size: 1.5em; /* 大きく */
   cursor: pointer;
-  padding: 0 5px;
+  padding: 0 8px;
+  transition: transform 0.2s ease;
 }
 
+.close-button:hover {
+  transform: rotate(90deg);
+}
+
+/* チャットメッセージエリア */
 .chat-window {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  overflow: hidden; /* 親要素のoverflowをhiddenに */
+  overflow: hidden;
 }
 
 .messages {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 10px;
-  border-bottom: 1px solid #eee;
+  padding: 15px;
+  background-color: #f8f9fa; /* わずかにグレーの背景 */
+  border-bottom: 1px solid #e0e0e0;
   text-align: left;
 }
 
+/* メッセージバブル */
 .message {
-  margin-bottom: 10px;
-  padding: 8px 12px;
-  border-radius: 15px;
-  max-width: 80%;
+  margin-bottom: 12px;
+  padding: 10px 15px;
+  border-radius: 20px; /* より丸く */
+  max-width: 75%; /* 少し狭く */
   word-wrap: break-word;
+  line-height: 1.5;
+  font-size: 0.95em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* 柔らかいシャドウ */
 }
 
 .message.user {
-  background-color: #007bff;
+  background: linear-gradient(45deg, #007bff 0%, #0056b3 100%); /* ユーザーメッセージのグラデーション */
   color: white;
   align-self: flex-end;
   margin-left: auto;
+  border-bottom-right-radius: 5px; /* 角を少しシャープに */
 }
 
 .message.ai {
-  background-color: #e2e2e2;
+  background-color: #e9ecef; /* AIメッセージの背景色 */
   color: #333;
   align-self: flex-start;
   margin-right: auto;
+  border-bottom-left-radius: 5px; /* 角を少しシャープに */
 }
 
 .message.ai.error {
-  background-color: #ffcccc;
-  color: #cc0000;
+  background-color: #ffe0e0;
+  color: #d9534f;
+  border: 1px solid #d9534f;
 }
 
 .message.ai.loading {
   font-style: italic;
-  color: #666;
+  color: #888;
+  background-color: #f0f0f0;
 }
 
+/* 入力エリア */
 .input-area {
   display: flex;
-  padding: 10px;
-  border-top: 1px solid #eee;
-  flex-shrink: 0; /* 縮小しない */
+  padding: 15px;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
 }
 
 .input-area input {
   flex-grow: 1;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  padding: 12px 15px;
+  border: 1px solid #ced4da;
+  border-radius: 25px; /* より丸く */
   margin-right: 10px;
+  font-size: 1em;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-area input:focus {
+  border-color: #8e2de2; /* フォーカス時の色 */
+  box-shadow: 0 0 0 0.2rem rgba(142, 45, 226, 0.25);
+  outline: none;
 }
 
 .input-area button {
-  padding: 8px 15px;
-  background-color: #007bff;
+  padding: 12px 20px;
+  background: linear-gradient(45deg, #8e2de2 0%, #4a00e0 100%); /* 送信ボタンのグラデーション */
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 25px; /* より丸く */
   cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+}
+
+.input-area button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .input-area button:disabled {
-  background-color: #cccccc;
+  background: #cccccc; /* 無効時の色 */
   cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
 }
 </style>
