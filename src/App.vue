@@ -70,7 +70,7 @@ const toggleChat = () => {
       scrollToBottom();
       // チャットが開いたときに初期メッセージを表示
       if (messages.value.length === 0) {
-        messages.value.push({ text: 'こちらでは、人形小辞典に掲載されている内容をもとにAIが回答します。内容は必ずしも正しいものとは限りませんことをご了承ください。', sender: 'ai' });
+        messages.value.push({ text: 'こちらでは、人形小辞典に掲載されている内容をもとにAIが回答します。\n内容は必ずしも正しいものとは限りませんことをご了承ください。', sender: 'ai' });
       }
     });
   }
